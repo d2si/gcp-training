@@ -1,7 +1,12 @@
 resource "google_project_iam_custom_role" "inventory" {
-  role_id     = "inventory"
-  title       = "Inventory"
-  permissions = ["compute.instances.list", "compute.firewalls.list"]
+  role_id = "inventory"
+  title   = "Inventory"
+
+  permissions = [
+    "compute.zones.list",
+    "compute.instances.list",
+    "compute.firewalls.list",
+  ]
 }
 
 resource "google_project_iam_binding" "inventory" {
