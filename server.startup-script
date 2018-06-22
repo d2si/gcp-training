@@ -1,0 +1,21 @@
+#!/bin/bash -e
+
+curl -s -L -o /tmp/server https://github.com/d2si/gcp-training/releases/download/latest/server-linux-amd64 && chmod +x /tmp/server
+
+cat > /etc/systemd/system/server.service <<EOF
+[Unit]
+Description=server
+After=network.target
+
+[Service]
+Type=simple
+User=nobody
+WorkingDirectory=/tmp
+ExecStart=/tmp/server
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl daemon-reload && systemctl start server

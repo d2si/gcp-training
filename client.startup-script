@@ -1,0 +1,28 @@
+#!/bin/bash -e
+
+# Note: this startup script expects an instance metadata named "target"
+# containing a valid target HTTP URL (e.g. "http://example.net/")
+
+curl -s -L https://github.com/tsenart/vegeta/releases/download/v7.0.3/vegeta-7.0.3-linux-amd64.tar.gz | tar -C /tmp -xzf - vegeta
+
+echo -n "GET " > /tmp/target
+
+curl -s -H "Metadata-Flavor: Google" http://metadata.google.internal/computeMetadata/v1/instance/attributes/target >> /tmp/target
+
+cat > /etc/systemd/system/vegeta.service <<EOF
+[Unit]
+Description=vegeta
+After=network.target
+
+[Service]
+Type=simple
+User=nobody
+WorkingDirectory=/tmp
+ExecStart=/tmp/vegeta attack -targets /tmp/target -rate 1000 -output /dev/null
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl daemon-reload && systemctl start vegeta
