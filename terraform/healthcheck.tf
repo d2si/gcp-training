@@ -6,4 +6,6 @@ resource "google_compute_http_health_check" "http_8000" {
   timeout_sec         = 1
   healthy_threshold   = 2
   unhealthy_threshold = 3
+
+  depends_on = ["google_compute_firewall.gclb-server"]
 }
